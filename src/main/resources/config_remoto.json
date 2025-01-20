@@ -1,0 +1,14 @@
+{
+  "cadenaConexion": "mongodb+srv://usuarioAE03:contraseña_U_AE03@cluster0.osvlv.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
+  "usuario": "usuarioAE03",
+  "contrasenya": "contraseña_U_AE03",
+  "cluster": "cluster0.osvlv.mongodb.net",
+  "configuracion": "/?retryWrites=true&w=majority&appName=Cluster0",
+  "base_datos": "casino",
+  "colecciones": [
+    "users",
+    "scores",
+    "cards_es",
+    "cards_fr"
+  ]
+}
