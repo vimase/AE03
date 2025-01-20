@@ -62,7 +62,9 @@ public class Modelo {
 	private List<Carta> cartasUsuario = new ArrayList<Carta>();
 
 	public Modelo() throws IOException {
-        
+		barajaCartas = new ArrayList<>();
+	    cartasCrupier = new ArrayList<>();
+	    cartasUsuario = new ArrayList<>();
 	}
 	
 	/**
@@ -72,24 +74,27 @@ public class Modelo {
      * @throws IOException Si ocurre un error al leer el archivo de configuración o al conectar a la base de datos.
      */
 	private void conectarMongoBD() throws IOException {
-		// No mostrar logs de MongoDB
-		Logger mongoLogger = Logger.getLogger( "org.mongodb.driver" );
-		mongoLogger.setLevel(Level.SEVERE); // e.g. or Log.WARNING, etc.
+		if (mongoClient == null) {
+			// No mostrar logs de MongoDB
+			Logger mongoLogger = Logger.getLogger( "org.mongodb.driver" );
+			mongoLogger.setLevel(Level.SEVERE); // e.g. or Log.WARNING, etc.
 
-		// En local
-//		String content = new String(Files.readAllBytes(Paths.get("src/main/resources/config_local.json")));
-//		JSONObject config = new JSONObject(content);
-//		MongoClientURI uri = new MongoClientURI("mongodb://" + config.get("usuario") + ":" + config.get("contrasenya") + "@" + config.get("ip") + ":" + config.get("puerto") + "/");
-		//MongoClientURI uri = new MongoClientURI(config.getString("cadenaConexion"));
+			// En local
+//			String content = new String(Files.readAllBytes(Paths.get("src/main/resources/config_local.json")));
+//			JSONObject config = new JSONObject(content);
+//			MongoClientURI uri = new MongoClientURI("mongodb://" + config.get("usuario") + ":" + config.get("contrasenya") + "@" + config.get("ip") + ":" + config.get("puerto") + "/");
+			//MongoClientURI uri = new MongoClientURI(config.getString("cadenaConexion"));
+			
+			// En remoto
+			String content = new String(Files.readAllBytes(Paths.get("src/main/resources/config_remoto.json")));
+			JSONObject config = new JSONObject(content);
+			MongoClientURI uri = new MongoClientURI("mongodb+srv://" + config.get("usuario") + ":" + config.get("contrasenya") + "@" + config.get("cluster") + config.get("configuracion"));
+			//MongoClientURI uri = new MongoClientURI(config.getString("cadenaConexion"));
+
+			mongoClient = new MongoClient(uri);
+			database = mongoClient.getDatabase("casino");
+		}
 		
-		// En remoto
-		String content = new String(Files.readAllBytes(Paths.get("src/main/resources/config_remoto.json")));
-		JSONObject config = new JSONObject(content);
-		MongoClientURI uri = new MongoClientURI("mongodb+srv://" + config.get("usuario") + ":" + config.get("contrasenya") + "@" + config.get("cluster") + config.get("configuracion"));
-		//MongoClientURI uri = new MongoClientURI(config.getString("cadenaConexion"));
-
-		mongoClient = new MongoClient(uri);
-		database = mongoClient.getDatabase("casino");
 	}
 	
 	/**
@@ -393,16 +398,48 @@ public class Modelo {
      * @throws IOException Si ocurre un error al interactuar con la base de datos.
      */
 	public void desconectar() throws IOException {
-		if (mongoClient == null) conectarMongoBD();
-		JOptionPane.showMessageDialog(null, "¡Hasta pronto!", "Alerta", JOptionPane.PLAIN_MESSAGE);
-		usuarioActivo = false;
-		usuarioLogueado = "";
-		turno = null;
-		barajaCartas = null;
-		cartasCrupier = new ArrayList<Carta>();
-		cartasUsuario = new ArrayList<Carta>();
-		mongoClient.close();
+	    if (mongoClient != null) {
+	        mongoClient.close();
+	        mongoClient = null;
+	        database = null;
+	    }
+
+	    usuarioActivo = false;
+	    usuarioLogueado = "";
+	    turno = null;
+
+	    if (barajaCartas == null) {
+	        barajaCartas = new ArrayList<>();
+	    } else {
+	        barajaCartas.clear();
+	    }
+
+	    if (cartasCrupier == null) {
+	        cartasCrupier = new ArrayList<>();
+	    } else {
+	        cartasCrupier.clear();
+	    }
+
+	    if (cartasUsuario == null) {
+	        cartasUsuario = new ArrayList<>();
+	    } else {
+	        cartasUsuario.clear();
+	    }
+
+	    puntuacionTotalCrupier = 0;
+	    puntuacionTotalUsuario = 0;
+	    historialCrupier = "";
+	    historialUsuario = "";
+	    plantadaIA = false;
+	    plantadoUsuario = false;
+	    perdidoIA = false;
+	    perdidoUsuario = false;
+	    partidaFinalizada = false;
+	    partidaIniciada = false;
+
+	    JOptionPane.showMessageDialog(null, "¡Hasta pronto!", "Alerta", JOptionPane.PLAIN_MESSAGE);
 	}
+
 
 	public boolean isUsuarioActivo() {
 		return usuarioActivo;

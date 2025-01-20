@@ -19,7 +19,7 @@ public class Vista extends JFrame {
 	JButton btnRegistrarse;
 	JButton btnAcceder;
 	JButton btnStart;
-	JComboBox<String> cmbEsFr;
+	JComboBox cmbEsFr;
 	JButton btnGuardar;
 	JButton btnHallOfFame;
 	JButton btnDesconectarse;
@@ -59,8 +59,8 @@ public class Vista extends JFrame {
 		btnStart.setBounds(514, 11, 89, 23);
 		contentPane.add(btnStart);
 		
-		cmbEsFr = new JComboBox<String>();
-		cmbEsFr.setModel(new DefaultComboBoxModel<String>(new String[] {"ES", "FR"}));
+		cmbEsFr = new JComboBox();
+		cmbEsFr.setModel(new DefaultComboBoxModel(new String[] {"ES", "FR"}));
 		cmbEsFr.setBounds(458, 11, 46, 22);
 		contentPane.add(cmbEsFr);
 		
